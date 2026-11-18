@@ -490,10 +490,15 @@ Use separate modules or packages for: `User`, `Candidate`, `Recruiter`, `Company
 
 **Application statuses:**
 ```
-APPLIED → SHORTLISTED → INTERVIEW → OFFER
-Alternative terminal status: REJECTED
+APPLIED → SHORTLISTED → INTERVIEW → OFFER → ACCEPTED | DECLINED
+APPLIED / SHORTLISTED / INTERVIEW → REJECTED
+REJECTED → previous status (reopen)
 ```
 
+- Moves are forward only, with no skipping. Full rules: `docs/requirements.md` (FR-035 to FR-037).
+- The recruiter issues offers; only the candidate can set `ACCEPTED` or `DECLINED`.
+- Rejection requires a reason. Only the owning recruiter can reopen a rejected application, with a mandatory reason and only while the job is open.
+- Every status change is recorded in an audit history.
 - Validate status transitions in the service layer.
 - Prevent duplicate applications.
 
