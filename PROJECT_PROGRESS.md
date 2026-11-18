@@ -3,8 +3,8 @@
 > **Project:** HireSense – AI-Powered Recruitment Platform
 > **Development Status:** `IN_PROGRESS`
 > **Current Phase:** Phase 0 – Planning and Setup
-> **Current Task:** Task 0.1 – Development Environment Setup
-> **Last Updated:** Not started
+> **Current Task:** Task 0.5 – Define user roles and user stories (not started; awaiting your confirmation)
+> **Last Updated:** 2026-11-18 (Task 0.4 completed)
 
 > **Important:** AI must read this file before starting development and update it after meaningful milestones.
 > **Project principle:** Always know what is completed, what is in progress, what is blocked and what comes next.
@@ -40,11 +40,11 @@
 | Item | Value |
 |------|-------|
 | **Current Phase** | Phase 0 – Planning and Setup |
-| **Current Task** | Task 0.1 – Development Environment Setup |
-| **Current Objective** | Prepare the development environment and understand the project requirements before implementation. |
-| **Current Activity** | Not started. |
-| **Blockers** | None identified. |
-| **Next Task** | Install and verify Java 21, Maven, Node.js, Angular CLI, Docker Desktop, IDE, Postman and Git. |
+| **Current Task** | Task 0.5 – Define user roles and user stories (not started; awaiting confirmation) |
+| **Current Objective** | Understand the project requirements and design before implementation (tools, repo, folders and requirements are done). |
+| **Current Activity** | Tasks 0.1–0.4 done. Waiting for confirmation to start Task 0.5. |
+| **Blockers** | None. (Backend test `contextLoads` fails by design until Task 1.2; see Known Issues.) |
+| **Next Task** | Task 0.5: write user stories with acceptance criteria, linked to requirement IDs; resolve open question Q1. |
 
 ---
 
@@ -55,10 +55,10 @@
 
 | Task | Description | Status |
 |------|-------------|--------|
-| 0.1 | Install development tools | `NOT_STARTED` |
-| 0.2 | Create GitHub repository | `NOT_STARTED` |
-| 0.3 | Create project folder structure | `NOT_STARTED` |
-| 0.4 | Write project requirements | `NOT_STARTED` |
+| 0.1 | Install development tools | `COMPLETED` (Docker deferred to Phase 4; see Known Issues) |
+| 0.2 | Create GitHub repository | `VERIFIED` (repo pre-existed; Git email change deferred) |
+| 0.3 | Create project folder structure | `VERIFIED` (Option A: kept `backend/` and `ui/`; added `docs/*` and `infra/`) |
+| 0.4 | Write project requirements | `COMPLETED` (`docs/requirements.md` v0.1 draft; 6 open questions logged) |
 | 0.5 | Define user roles and user stories | `NOT_STARTED` |
 | 0.6 | Design ER diagram | `NOT_STARTED` |
 | 0.7 | Create GitHub Projects board | `NOT_STARTED` |
@@ -331,7 +331,12 @@ Track concepts that I have studied and understood.
 
 | Issue | Priority | Status | Notes |
 |-------|----------|--------|-------|
-| None identified | - | - | - |
+| `HireSenseApplicationTests.contextLoads` fails: "Failed to determine a suitable driver class" | Low | Open – planned for Task 1.2 | Backend has `spring-boot-starter-data-jpa` but no JDBC driver or datasource config. Fix = add PostgreSQL driver + config (Task 1.2). Not fixed in Phase 0 to avoid jumping ahead. |
+| `java` on PATH resolved to JDK 17 | Low | Resolved | Machine PATH already lists JDK 21 before 17 and `JAVA_HOME` is JDK 21; the 17 seen earlier was a stale session environment. Verified with a fresh environment. Restart VS Code/terminals to pick it up. |
+| `ui/.angular/` (Angular build cache) shows as untracked in git | Low | Resolved | Added `ui/.angular/` to `.gitignore` (approved); verified with `git check-ignore`. |
+| Local Git email is the work address (`yukta.v@ascentbusiness.com`) | Medium | Deferred (user decision) | Keep current identity for now. Before publishing the final portfolio version (Phase 12), configure a personal or GitHub noreply email locally (`git config user.email`, never `--global`) with approval. Existing 4 commits already show the work email; rewriting them is not planned. |
+| Docker Desktop not installed | Low | Deferred | Needed from Phase 4. |
+| Angular CLI not installed globally | Info | Accepted | Use `npx ng` (project has a local CLI). |
 
 ---
 
@@ -375,6 +380,34 @@ Record important technical decisions here. Larger decisions also get an ADR in `
 ## 9. Development Changelog
 
 Record meaningful development milestones (newest at the top).
+
+### Task 0.4 – Requirements (2026-11-18)
+- Created `docs/requirements.md` (documentation only; no code or other files changed).
+- Contents: scope and out-of-scope, 3 roles, 10 modules, 17 detailed functional requirements with acceptance criteria (FR-001..FR-050 MVP, FR-051 Planned), 8 Planned requirements listed briefly (FR-060..FR-080) and 5 Future ideas (FUT-001..005), 37 non-functional requirements (NFR-001..NFR-037) covering performance, security, reliability, responsible AI, maintainability, usability and privacy, plus traceability, assumptions and 6 open questions (Q1–Q6).
+- Key decisions recorded in the doc: MVP/Planned/Future tiers mapped to roadmap phases; one role per account and one company per recruiter (MVP); stateless JWT backend; close-instead-of-delete for jobs (to confirm in Phase 1); AI never decides hiring (NFR-021); privacy treated as a requirement.
+- Numeric targets (e.g. 500 ms, 70% coverage) are goals only, not measured.
+- Not verified: it is a planning document; it has not been reviewed by you yet.
+
+### Task 0.3 – Folder structure (2026-11-18)
+- Decision: keep `backend/` and `ui/` (deviation from roadmap names `hiresense-monolith` / `hiresense-ui`; avoids breaking builds and history).
+- Created (6 files, each with a purpose README so Git can track the folder): `docs/adr/`, `docs/database/`, `docs/diagrams/`, `docs/api/`, `docs/learning-notes/`, `infra/`. No existing file moved, renamed or deleted.
+- Verified: backend `package -DskipTests` builds `HireSense-0.0.1-SNAPSHOT.jar` (the skip is a command-line flag only; no test was disabled in code). Backend tests: 1 run, 1 error (unchanged `contextLoads`, Task 1.2). Frontend build OK; frontend tests 2/2 passed.
+- Uncommitted: `.gitignore`, `PROJECT_PROGRESS.md` (modified); `docs/`, `infra/` (new). Nothing staged.
+
+### Task 0.2 – GitHub repository (2026-11-18)
+- Repo already exists: `yuktavyas14/HireSense-AI-Powered-Recruitment-Platform`; name kept (user decision).
+- Verified: visibility is **public** (GitHub API `private:false`); `origin` fetch/push URLs match; branch `main`; local `HEAD` equals `origin/main` (79d3a50), so nothing unpushed.
+- Edited `.gitignore` (+ `ui/.angular/`). No Git state-changing commands run; nothing staged or committed.
+- Uncommitted changes: `.gitignore`, `PROJECT_PROGRESS.md`.
+
+### Task 0.1 – Development tools (2026-11-18)
+- Installed Eclipse Temurin JDK 21.0.13 via winget (user-approved). Java 11 and 17 left untouched.
+- Verified: `mvnw -version` runs on Java 21.0.13 (Maven 3.10.1 wrapper); Node 20.20.2, npm 10.8.2, Git 2.55.0, VS Code, Postman present.
+- Compiled: `mvnw clean verify` compiles the backend on JDK 21.
+- Tested (backend): NOT passing – 1 test, 1 error (missing datasource, see Known Issues). Deliberately left failing until Task 1.2 (user decision).
+- Verified (fresh environment): `java -version` = 21.0.13 and `mvnw -version` = Java 21.0.13.
+- Frontend: `npm run build` succeeded (Angular 21, 214 kB initial bundle). `npm test -- --no-watch`: 1 file, 2 tests passed (Vitest). Not manually run in the browser.
+- Docker Desktop deferred to Phase 4 by decision.
 
 ### Initial Setup
 - Created project progress tracker.
