@@ -2,9 +2,9 @@
 
 > **Project:** HireSense – AI-Powered Recruitment Platform
 > **Development Status:** `IN_PROGRESS`
-> **Current Phase:** Phase 0 – Planning and Setup
-> **Current Task:** Task 0.5 – Define user roles and user stories (not started; awaiting your confirmation)
-> **Last Updated:** 2026-11-18 (Task 0.4 completed)
+> **Current Phase:** Phase 1 – Core Backend (started by owner decision); Phase 0 remains `IN_PROGRESS` alongside it
+> **Current Task:** Task 1.2 – Configure PostgreSQL (`COMPLETED`, tested with Maven on JDK 21; not `VERIFIED` until the owner has run the test in IntelliJ). Next: Actuator health endpoint, then Task 1.3 (Flyway)
+> **Last Updated:** 2026-11-18 (Task 1.2 database and backend configuration done and tested)
 
 > **Important:** AI must read this file before starting development and update it after meaningful milestones.
 > **Project principle:** Always know what is completed, what is in progress, what is blocked and what comes next.
@@ -18,7 +18,7 @@
 | Phase | Description | Status |
 |-------|-------------|--------|
 | Phase 0 | Planning and Setup | `IN_PROGRESS` |
-| Phase 1 | Core Backend | `NOT_STARTED` |
+| Phase 1 | Core Backend | `IN_PROGRESS` (started 2026-11-18 by owner decision while Phase 0 is open) |
 | Phase 2 | Security | `NOT_STARTED` |
 | Phase 3 | Angular Frontend | `NOT_STARTED` |
 | Phase 4 | Docker and File Uploads | `NOT_STARTED` |
@@ -39,12 +39,12 @@
 
 | Item | Value |
 |------|-------|
-| **Current Phase** | Phase 0 – Planning and Setup |
-| **Current Task** | Task 0.5 – Define user roles and user stories (not started; awaiting confirmation) |
-| **Current Objective** | Understand the project requirements and design before implementation (tools, repo, folders and requirements are done). |
-| **Current Activity** | Tasks 0.1–0.4 done. Waiting for confirmation to start Task 0.5. |
-| **Blockers** | None. (Backend test `contextLoads` fails by design until Task 1.2; see Known Issues.) |
-| **Next Task** | Task 0.5: write user stories with acceptance criteria, linked to requirement IDs; resolve open question Q1. |
+| **Current Phase** | Phase 1 – Core Backend (Phase 0 stays `IN_PROGRESS`; no `phase-0` tag yet) |
+| **Current Task** | Task 1.2 – Configure PostgreSQL (`COMPLETED`; Task 1.1 is `COMPLETED`) |
+| **Current Objective** | Add the Actuator health endpoint (separate step, exposes only `health`), then Task 1.3 (Flyway with the `hiresense_owner` role; also tests whether the JDBC driver's `pgpass.conf` fallback works for migrations). |
+| **Current Activity** | Task 1.2 finished: roles, databases, SCRAM passwords, connect rules and default privileges are in place; PostgreSQL JDBC driver and datasource configured; separate test database configured; `contextLoads` passes against `hiresense_test` (Maven, JDK 21). Remaining owner items: run the test once in IntelliJ, remove the stale run configuration, confirm the Maven runner JRE. |
+| **Blockers** | None for the next step. Owner items (not blocking): IntelliJ test run, stale run configuration (`com.example.hiresense.HireSenseApplication`), Maven runner JRE check. This shell's PATH still resolves `java` to 17; Maven runs from the shell need `JAVA_HOME` set to JDK 21 (IntelliJ uses `temurin-21`). Open decisions C1–C5 must be resolved before the tasks they affect. |
+| **Next Task** | Actuator health endpoint (as a separate step; checks that the app really reaches the database), then Task 1.3 (Flyway). Phase 0 leftovers (0.8 architecture docs + ADR-0001, 0.9 documentation) run alongside Phase 1. |
 
 ---
 
@@ -58,27 +58,29 @@
 | 0.1 | Install development tools | `COMPLETED` (Docker deferred to Phase 4; see Known Issues) |
 | 0.2 | Create GitHub repository | `VERIFIED` (repo pre-existed; Git email change deferred) |
 | 0.3 | Create project folder structure | `VERIFIED` (Option A: kept `backend/` and `ui/`; added `docs/*` and `infra/`) |
-| 0.4 | Write project requirements | `COMPLETED` (`docs/requirements.md` v0.1 draft; 6 open questions logged) |
-| 0.5 | Define user roles and user stories | `NOT_STARTED` |
-| 0.6 | Design ER diagram | `NOT_STARTED` |
-| 0.7 | Create GitHub Projects board | `NOT_STARTED` |
-| 0.8 | Create architecture documentation | `NOT_STARTED` |
-| 0.9 | Prepare project documentation | `NOT_STARTED` |
+| 0.4 | Write project requirements | `COMPLETED` (`docs/requirements.md` v0.6, decisions D-01..D-31 approved; only open question: Q7 retention policy. **Owner committed and pushed the docs in `8162842`**, so the "committed and pushed" condition is met; GitHub issue #17 is still open and awaits the owner's OK to close it) |
+| 0.5 | Define user roles and user stories | `VERIFIED` (`docs/user-stories.md` v0.3, approved by owner; traceability checked) |
+| 0.6 | Design ER diagram | `COMPLETED` (owner final sign-off 2026-11-18: 12 tables, DD-01..DD-15, DO-1..DO-6 decided. Limitations: diagram not visually rendered; Flyway/JPA untested; PGlite 48/48 results preliminary and to be repeated on the PostgreSQL version chosen in Phase 1) |
+| 0.7 | Create GitHub Projects board | `COMPLETED` (**reduced scope**, owner decision 2026-11-18). Done and verified: 13 labels, 13 milestones, 37 issues (#1–#37; #15, #16, #18 closed). **Deferred, must not block development:** GitHub Project, custom fields, views, automation, sub-issue links |
+| 0.8 | Create architecture documentation | `NOT_STARTED` (runs alongside Phase 1; Phase 0 stays open until 0.8 and 0.9 are addressed) |
+| 0.9 | Prepare project documentation | `NOT_STARTED` (runs alongside Phase 1) |
 
 **Completion Criteria:**
 - [ ] Development environment ready.
-- [ ] GitHub repository created.
-- [ ] Requirements documented.
-- [ ] ER diagram completed.
-- [ ] Project structure prepared.
+- [x] GitHub repository created (pre-existing, verified public).
+- [x] Requirements documented (`docs/requirements.md` v0.6, `docs/user-stories.md` v0.3).
+- [x] ER diagram completed (design signed off; see verification limitations).
+- [x] Project structure prepared (`docs/*`, `infra/`).
+- [x] Documentation committed after owner approval: requirements, user stories, database design, ER diagram and the `HIRESENSE.md` workflow fix were committed and pushed by the owner in `8162842` (origin/main = HEAD). `PROJECT_PROGRESS.md` itself is not yet committed.
+- [ ] Tasks 0.8 and 0.9 done; remaining verification gaps addressed (rendered diagram, Flyway/JPA tests, PostgreSQL re-check); `phase-0` tag only after owner approval.
 
 ### Phase 1 – Core Backend
-**Status:** `NOT_STARTED`
+**Status:** `IN_PROGRESS` (started by explicit owner decision while Phase 0 is open)
 
 | Task | Description | Status |
 |------|-------------|--------|
-| 1.1 | Generate Spring Boot project | `NOT_STARTED` |
-| 1.2 | Configure PostgreSQL | `NOT_STARTED` |
+| 1.1 | Generate Spring Boot project (**scope: review the existing project; never generate a second one**) | `COMPLETED` (existing project reviewed; base package changed to `com.hiresense`, Maven `groupId` `com.hiresense`, `artifactId` kept `HireSense`; **compiled on JDK 21**; not `VERIFIED` because the app cannot start and its test fails until Task 1.2) |
+| 1.2 | Configure PostgreSQL | `COMPLETED` (PostgreSQL 17.12, roles `hiresense_owner`/`hiresense_app` with SCRAM passwords, databases `hiresense`/`hiresense_test`, `PUBLIC` has no database access, default privileges set in both databases; driver 42.7.14, datasource without password via `pgpass.conf`, separate test database; `contextLoads` passes against `hiresense_test` with Maven on JDK 21. **Not `VERIFIED`:** not yet run in IntelliJ; no tables exist, so the app role's table rights are untested until Task 1.3) |
 | 1.3 | Configure Flyway | `NOT_STARTED` |
 | 1.4 | Design backend package structure | `NOT_STARTED` |
 | 1.5 | Implement User entity | `NOT_STARTED` |
@@ -331,11 +333,25 @@ Track concepts that I have studied and understood.
 
 | Issue | Priority | Status | Notes |
 |-------|----------|--------|-------|
-| `HireSenseApplicationTests.contextLoads` fails: "Failed to determine a suitable driver class" | Low | Open – planned for Task 1.2 | Backend has `spring-boot-starter-data-jpa` but no JDBC driver or datasource config. Fix = add PostgreSQL driver + config (Task 1.2). Not fixed in Phase 0 to avoid jumping ahead. |
+| `HireSenseApplicationTests.contextLoads` fails: "Failed to determine a suitable driver class" | Low | **Resolved 2026-11-18 (Task 1.2)** | Added PostgreSQL driver and datasource configuration; test passes against `hiresense_test` (Maven, JDK 21). |
+| `pgpass.conf` passwords: contents became visible to the AI and were first mismatched | Medium | Mitigated, owner decision | The owner typed the `hiresense_app` password into `%APPDATA%\postgresql\pgpass.conf`; a file-change notice showed the AI the file content (never repeated). The two lines differed and the first was wrong; the owner then changed the password and the AI made line 2 equal to line 1 with a script that printed no password (24 characters, identical, no BOM). The owner declined to rotate the app password; the passwords looked guessable and were visible in this session, so rotating them is still recommended. |
+| Database collation is the Windows locale `English_India.1252` | Low | Open (note) | Text sorting may differ from Linux/Docker databases in Phase 4. Changing it means recreating the databases. |
 | `java` on PATH resolved to JDK 17 | Low | Resolved | Machine PATH already lists JDK 21 before 17 and `JAVA_HOME` is JDK 21; the 17 seen earlier was a stale session environment. Verified with a fresh environment. Restart VS Code/terminals to pick it up. |
 | `ui/.angular/` (Angular build cache) shows as untracked in git | Low | Resolved | Added `ui/.angular/` to `.gitignore` (approved); verified with `git check-ignore`. |
 | Local Git email is the work address (`yukta.v@ascentbusiness.com`) | Medium | Deferred (user decision) | Keep current identity for now. Before publishing the final portfolio version (Phase 12), configure a personal or GitHub noreply email locally (`git config user.email`, never `--global`) with approval. Existing 4 commits already show the work email; rewriting them is not planned. |
-| Docker Desktop not installed | Low | Deferred | Needed from Phase 4. |
+| ER diagram has not been visually rendered | Low | Open (documented limitation) | Mermaid syntax was verified with the real parser, but nobody has looked at the drawn diagram. Open `docs/diagrams/er-diagram.md` on GitHub or in a Mermaid preview. |
+| Flyway migrations and JPA mappings not written or tested | Info | Open (Phase 1) | The database design exists only as documents. |
+| PGlite constraint results (48/48) are preliminary | Medium | Open (Phase 1) | Ran on PostgreSQL 16.4 in WebAssembly. Must be repeated against the PostgreSQL version selected in Phase 1 (real server, Flyway, Testcontainers). |
+| Q7 data-retention policy undecided | Medium | Open (owner: later task) | Interim rule D-16 applies (no deleting jobs that have applications; no account deletion in the MVP). |
+| DO-6 database-level immutability of history/audit tables | Low | Deferred to Phase 1 | Decide when database roles are configured. Until then application code only inserts. |
+| `HIRESENSE.md` Phase 1 still lists statuses as `APPLIED → SHORTLISTED → INTERVIEW → OFFER` with `REJECTED` as terminal | Medium | Resolved | Updated lines 491–501 of `HIRESENSE.md` with the text you approved (statuses `ACCEPTED`/`DECLINED`, reopen, reasons, audit). `docs/requirements.md` remains the source of truth; the roadmap only points to FR-035..FR-037. Edit is uncommitted. |
+| Backend cannot start; `HireSenseApplicationTests.contextLoads` fails | High (until 1.2) | **Resolved 2026-11-18 (Task 1.2)** | `mvnw clean verify` on JDK 21: 1 test, 0 failures, BUILD SUCCESS. The app connects to PostgreSQL as `hiresense_app`. |
+| Shell `java` resolves to JDK 17, so `mvnw test` forks Java 17 and fails on Java 21 classes | Low | Open (workaround) | Set `JAVA_HOME` and `PATH` to JDK 21 (`C:\Program Files\Eclipse Adoptium\jdk-21.0.13.9-hotspot`) for shell runs. IntelliJ's project SDK is now `temurin-21` (verified in `.idea/misc.xml`). |
+| PostgreSQL 17.12 server listened on all network interfaces (`listen_addresses = '*'`) | Medium | **Resolved 2026-11-18** | Owner set `listen_addresses = 'localhost'` and restarted the service. Verified by the AI: `postgresql.conf` and `postgresql.auto.conf` both say `localhost`; only `127.0.0.1:5432` and `::1:5432` listen; no `0.0.0.0` or `::`. |
+| `psql`, `pg_dump`, `pg_restore` and a "SQL Shell (psql)" shortcut exist on disk | Low | Open – owner decision | Came with the installation (owner asked for no psql). Not on PATH, never used; IntelliJ remains the only database interface. |
+| PostgreSQL service starts automatically with Windows | Info | Open – owner may change | Start type Auto; changing it is a Windows setting and needs approval. |
+| Phase 1 started while Phase 0 is open | Info | Accepted by owner | 0.8, 0.9, committing the docs and the verification gaps remain; no `phase-0` tag until addressed. |
+| Docker Desktop not installed | Low | Deferred | Needed from Phase 4. Owner: do not install it. |
 | Angular CLI not installed globally | Info | Accepted | Use `npx ng` (project has a local CLI). |
 
 ---
@@ -352,6 +368,25 @@ Record important technical decisions here. Larger decisions also get an ADR in `
 | Introduce Keycloak later | Learn JWT and Spring Security first | Phase 2/5 |
 | Introduce Kafka after microservices | Learn asynchronous communication | Phase 6 |
 | Use Ollama initially | Local AI development | Phase 7 |
+| Anonymous job browsing, login required to apply (D-01) | Lower sign-up barrier; public data minimal and rate-limited | Phase 1/2 |
+| Controlled application workflow with `ACCEPTED`/`DECLINED` and recruiter-only reopen with reason (D-02, D-10, D-11, D-14) | Truthful hiring record, human oversight | Phase 1 |
+| Close jobs instead of deleting; no hard delete while applications exist (D-03, D-16) | Protect candidate history until retention policy is defined | Phase 1 |
+| Password 8–64 chars, blocklist, BCrypt (D-04, D-08) | Length over complexity rules; BCrypt 72-byte limit | Phase 2 |
+| Multiple resumes (max 5, 5 MB), mandatory when applying, private storage (D-06, D-09, D-15, D-17) | Candidate flexibility and privacy | Phase 4 |
+| AI is advisory only (D-07) | Human oversight of hiring decisions | Phase 7 |
+| Candidate answers offers; recruiter cannot (D-18) | The decision to accept stays with the candidate | Phase 1 |
+| Password byte-length check before BCrypt, never truncate (D-19) | BCrypt ignores bytes after 72 | Phase 2 |
+| Mandatory reason for rejection and reopen; admins cannot reopen or download resumes (D-20, D-24, D-25) | Auditability and least privilege | Phase 1/4 |
+| Normalized skills tables, `recruiter_profiles`, UUID for API entities and BIGINT for logs (DD-01..DD-04) | Teachable relational design; skill filtering; unguessable ids | Phase 1 |
+| Composite FK for resume ownership, `RESTRICT` on history-bearing FKs, DB CHECKs as safety net; workflow in the service layer (DD-07, DD-08, DD-14) | The database refuses invalid data even if code has a bug | Phase 1 |
+| Status change and history row in one transaction, optimistic locking (409 on conflict) | Current state and audit trail can never disagree | Phase 1 |
+| Start Phase 1 while Phase 0 stays open; no `phase-0` tag yet | Owner priority is to begin development; Phase 0 leftovers continue alongside | Phase 0/1 |
+| Base package `com.hiresense` instead of `com.example.hiresense` | Remove the placeholder before any code exists | Phase 1 |
+| PostgreSQL used through IntelliJ IDEA Database Tools; no H2 for integration tests; no extra database clients or Docker | Owner preference and fidelity to the real database constraints | Phase 1 |
+| One recruiter per company is a service rule, not a schema limit | Business rules may change; the schema should not need a migration | Phase 1 |
+| Database password kept in `%APPDATA%\postgresql\pgpass.conf` (outside the project), not in run configurations or properties | The repo is public; the JDBC driver reads the file itself (verified) | Phase 1 |
+| Application runs as `hiresense_app` (no DDL); `hiresense_owner` is for Flyway only | Least privilege | Phase 1 |
+| Tests use a separate database `hiresense_test` through `src/test/resources/application.properties` | Tests must never touch development data; no H2 | Phase 1 |
 
 ---
 
@@ -380,6 +415,141 @@ Record important technical decisions here. Larger decisions also get an ADR in `
 ## 9. Development Changelog
 
 Record meaningful development milestones (newest at the top).
+
+### Task 1.2 completed: database, credentials, driver, datasource, test database (2026-11-18)
+- **Correction of earlier records:** the roles `hiresense_owner` and `hiresense_app` and the databases `hiresense` and `hiresense_test` **already existed** when queried in this session (owned by `hiresense_owner`, `login=true`, no superuser/createdb/createrole, no passwords). Earlier entries saying they did not exist were out of date. Who created them is not recorded. `PUBLIC` already had no access to either database (only the two roles have `CONNECT`; the app role has nothing else), and the default privileges for tables (`arwd`) and sequences (`rU`) for `hiresense_app` already existed in both databases. **No SQL was needed for Steps B and C**; my `GRANT CONNECT` changed nothing.
+- **Verified in IntelliJ by the owner (query results):** server encoding UTF8; `password_encryption = scram-sha-256`; database collation `English_India.1252`; Tx mode Auto; `current_user`/`current_database` correct for both `hiresense_owner@hiresense` and `hiresense_app@hiresense` (logins work); default-privilege rows in `hiresense` and `hiresense_test` (the `public`-only scope check in `hiresense` and the `current_database()` check for the test database were requested but not confirmed in writing).
+- **Done (owner):** set SCRAM passwords for both roles through the local verifier utility (no plaintext in chat; verification query shows `scram` for both). The admin data source `postgres@localhost` was re-created; the owner data source `hiresense_owner@hiresense` exists. Note: an IntelliJ console kept an old session on `postgres` until disconnected.
+- **Done (AI, owner-approved):** `backend/pom.xml` got `org.postgresql:postgresql` (runtime; version 42.7.14 from Spring Boot 4.1.2, resolved with `dependency:tree`); `application.properties` got `spring.datasource.url=jdbc:postgresql://localhost:5432/hiresense` and `username=hiresense_app` (no password); new `backend/src/test/resources/application.properties` points tests at `hiresense_test` (it replaces the main file during tests). `%APPDATA%\postgresql\pgpass.conf` was created with placeholders and the owner filled in the passwords.
+- **Tested (Maven, JDK 21.0.13):** `mvnw clean verify` = 1 test, 0 failures, BUILD SUCCESS. Hikari's debug log shows the connection to `jdbc:postgresql://localhost:5432/hiresense_test`. First test run failed with `password authentication failed` for each line of `pgpass.conf` in turn, proving the driver does read `pgpass.conf` and uses the per-database line. Frontend re-checked: `npm run build` OK (214.33 kB initial), `npm test`: 2 of 2 passed; not run in a browser.
+- **IntelliJ:** project SDK is now `temurin-21` / language level 21 (`.idea/misc.xml` verified). Two Spring Boot run configurations exist; the stale one (`com.example.hiresense.HireSenseApplication`) is still to be removed by the owner in the IDE.
+- **Not verified:** run of the test in IntelliJ; Maven runner JRE setting in IntelliJ; the app role's table privileges (no tables yet); Flyway with `pgpass`; `current_database()` of the console that showed the test-database default privileges.
+- Git: nothing staged, committed or pushed by the AI.
+
+### Task 1.2: state check after the owner's changes (2026-11-18)
+- **PASSED – loopback-only listening.** Owner changed `listen_addresses` to `localhost` in `postgresql.conf` (13:22) and `postgresql.auto.conf` (13:15) and restarted the service. AI verification (read-only): service Running (Auto); only `127.0.0.1:5432` and `[::1]:5432` listen; no wildcard binding; `pg_hba.conf` unchanged (scram-sha-256, loopback only). Findings 1 below is therefore closed.
+- **PASSED – IntelliJ administrator connection exists and worked.** IntelliJ's project data-source file `backend/.idea/dataSources.xml` defines `postgres@localhost` with `jdbc:postgresql://localhost:5432/postgres`; the local file records user `postgres`, a Password Safe `secret-storage` entry (value not read), and that the IDE connected: product PostgreSQL, **version 17.12**, JDBC driver 42.7.13 (IDE-only driver; the application's driver comes from Spring Boot's BOM, 42.7.14), and introspected schemas `information_schema`, `pg_catalog`, `public` of database `postgres`. The owner approved the IDE downloading the JDBC driver; it is in place (`jdbc-drivers\PostgreSQL\42.7.13`). IntelliJ data-source files live in the git-ignored `backend/.idea`.
+- **NOT VERIFIED (needs one IntelliJ query by the owner; the AI cannot run queries: it has no credentials and no database client):** server encoding / database encodings and collation, effective `password_encryption`, the list of existing roles. Everything else in the nine-query list was verified from files and the network instead (version via IntelliJ metadata, port, listen address, `pg_hba.conf` rules).
+- **Not done yet:** no roles, no `hiresense`/`hiresense_test` databases, no passwords/verifiers. SQL proposal to be approved first. Owner has not chosen an option for the on-disk `psql` tools; default stays "leave them, never use them".
+
+### Task 1.2: PostgreSQL 17.12 installed by the owner; read-only post-install review (2026-11-18)
+- **Installed by the owner (not by the AI):** PostgreSQL 17.12-1. Service `postgresql-x64-17` is **Running**, start type **Auto**, runs as `NT AUTHORITY\NetworkService`; install directory `C:\Program Files\PostgreSQL\17`, data directory `…\17\data`, port **5432**. `postgres.exe --version` reports 17.12. `pg_hba.conf` uses `scram-sha-256` on every line and only `127.0.0.1/32` and `::1/128` for TCP. The installer added nothing to PATH and set no `PG*` environment variables. **pgAdmin 4 is absent; the Stack Builder application and shortcut are absent.** The installer file is kept (not deleted).
+- **Finding 1 – listening on all interfaces (NOT yet changed):** `listen_addresses = '*'`, so the server is bound to `0.0.0.0:5432` and `:::5432`. Mitigations observed: `pg_hba.conf` accepts only loopback, Windows Firewall is enabled on all profiles, no inbound allow rule names the PostgreSQL program. **NOT VERIFIED:** port-based firewall rules (access denied without elevation; not escalated). Proposed fix, awaiting owner approval: `ALTER SYSTEM SET listen_addresses = 'localhost';` run through IntelliJ as `postgres` on an auto-commit connection, then a service restart by the owner (needs administrator rights), then a read-only re-check of the bound addresses.
+- **Finding 2 – client tools present (NOT removed):** `psql.exe`, `pg_dump.exe`, `pg_restore.exe` (and `stackbuilder.exe`, with no Stack Builder shortcut) exist in `bin`, and a Start Menu folder "PostgreSQL 17" holds a "SQL Shell (psql)" shortcut and `scripts\runpsql.bat`, so the Command Line Tools component evidently came with the install. The AI's plan assumed this component could be excluded cleanly; that assumption was wrong or the wizard choice differed (asked the owner). Not on PATH. Options offered: leave (recommended; never used, IntelliJ stays the only database interface), remove only the shortcut, or re-run the installer to change components. Nothing changed without owner approval.
+- **Next (owner actions):** create the IntelliJ administrator data source (auto-commit, Password Safe, approve the IDE's JDBC driver download), then run the read-only verification queries and share the results (no secrets). No roles, databases or credentials exist yet.
+
+### Task 1.2: installer verified, credential investigation, SCRAM script prepared (2026-11-18)
+- **PostgreSQL 17.12-1 installer downloaded (owner-approved) and verified; NOT installed.** File: `C:\Users\YuktaVyas\Downloads\postgresql-17.12-installer\postgresql-17.12-1-windows-x64.exe` (416,659,176 bytes, matches the announced size). **SHA-256 PASSED** (`23bc416a9fee380f0d9ba1969647e374b43c4f37ce8ae5762f2ea59350f49fbc`, identical to the winget manifest). **Authenticode PASSED** (Status Valid; signer EnterpriseDB Corporation; issuer DigiCert; valid 2026-01-30 to 2029-02-01; timestamped). The installer was never executed by the AI. **The owner installs it personally:** PostgreSQL Server only (no pgAdmin, Stack Builder, Command Line Tools/psql, Docker). The owner will say when installation is complete. The installer file is kept for now and is deleted only after asking the owner.
+- **Credential approach investigated (nothing implemented, no credentials created).** Owner approved investigating `%APPDATA%\postgresql\pgpass.conf` as the main method and the properties-file fallback **outside the project**, used only with approval. Verified facts: the PostgreSQL docs define the Windows file as `%APPDATA%\postgresql\pgpass.conf`, one `hostname:port:database:username:password` line per entry, and say no permission check is made on Windows (the directory is assumed secure); `%APPDATA%` is inherited by SYSTEM, Administrators and the owner only (verified with `icacls`); the `postgresql` folder does not exist yet. The PostgreSQL JDBC driver source (REL42.7.7 and master) falls back to the password file when no password property is set; IntelliJ Database Tools include a `PgPassAuthProvider`. **Flyway 12.4.0 open-source does not authenticate with pgpass itself** (its reader only logs an upgrade message), so Flyway must not be assumed to read it. Spring Boot 4.1.2 builds Flyway's migration connection as a `SimpleDriverDataSource` from `spring.flyway.*`; with no password it passes none, so the JDBC driver's own fallback should apply. **NOT VERIFIED** until a real server exists: this is tested in Task 1.3 (and the application connection in Task 1.2). Residual risks: plain text at rest outside the project; the device is Azure AD joined (managed device, backups/scanners may see user-profile files).
+- **Local password-hashing utility (SCRAM verifier method approved by the owner).** By owner decision the utility is **kept outside the repository, outside the project directory and out of every committed document**; this file records only that fact, never its name, location or source. It uses Node built-in modules only, has no file, network or process APIs, never prints or stores a password and has no password-writing function. **Disposable-password correctness test: PASSED 14 of 14** against in-memory PostgreSQL (the verifier is byte-for-byte identical to PostgreSQL's own for the same salt, and PostgreSQL stores a verifier we create unchanged). The test **can fail**: three deliberately broken copies of the algorithm were each caught. The utility has **not** been run with any real password; no role exists; no verifier or password has been written anywhere. A real login as a role from IntelliJ remains the final proof (NOT VERIFIED until the server exists).
+- **Owner decisions:** execution order for Task 1.2 is installer (owner) → SCRAM script review → explain and validate the credential approach → approval before creating roles or databases → implementation. IntelliJ Database Tools only; connection structure approved: administrator, `hiresense_owner`, `hiresense_app`, with separate development and test databases; Password Safe for IDE credentials; manual transaction mode where appropriate.
+
+### Task 1.2 preparation: owner decisions and IntelliJ review (2026-11-18)
+- **Owner decisions for Task 1.2:** PostgreSQL **17.12**; IntelliJ IDEA Ultimate is the **only** database tool (no Docker, pgAdmin, DBeaver, Stack Builder, psql or other client); **two roles**: `hiresense_owner` (Flyway migrations) and `hiresense_app` (normal operation, restricted); database credentials via **IntelliJ run configurations only** (no Windows environment variables, no passwords in project files); **Spring Boot Actuator health** added during Phase 1 exposing only the health endpoint; no download, install or configuration without showing exact details and getting approval.
+- **GitHub:** issue #17 closed as completed by the owner's approval (`gh issue close 17 --reason completed`; evidence of commit and push shown beforehand). Issues now: 33 open, 4 closed (#15, #16, #17, #18).
+- **IntelliJ review (read-only):** no data source exists yet in the backend project or globally. Credential-storage provider is not set explicitly (`security.xml` absent), so the IDE default applies; the owner should check it in the Passwords settings. **The project SDK is `ms-25` (JDK 25, language level 25), not JDK 21**, so runs from the IDE would use a different Java than everything verified so far; the owner is asked to switch the project SDK and the Maven runner JRE to the installed JDK 21.0.13. Two Spring Boot run configurations exist; the older one still points at the removed class `com.example.hiresense.HireSenseApplication` and is stale, the newer one `HireSenseApplication (1)` points at `com.hiresense.HireSenseApplication`. `backend/.idea/` is git-ignored (confirmed for `workspace.xml` and data-source files).
+- **Risk accepted by choosing Option B (to be confirmed with the owner):** environment variables set in IntelliJ run configurations are stored **in plain text inside `backend/.idea/workspace.xml`** (git-ignored, never committed unless `.gitignore` changes, but on disk in the project folder). Mitigation: unique, limited, localhost-only passwords; never share the `.idea` folder. Consequence: the AI cannot run database-dependent tests (it never sees the passwords); the owner runs them in IntelliJ and reports results.
+- **Drafted, not run:** role and database SQL (no passwords inside), configuration plan (`spring.datasource.*` from `HIRESENSE_DB_URL`, `HIRESENSE_DB_APP_USER`, `HIRESENSE_DB_APP_PASSWORD`; separate `hiresense_test` database for tests; Flyway owner credentials added in Task 1.3), `.env.example`, `docs/database/local-setup.md`, Actuator health step after the DB connection works.
+
+### Task 1.1 applied and verified; PostgreSQL install plan; issue #17 evidence (2026-11-18)
+- **Changes applied (owner-approved, nothing staged or committed):** `backend/pom.xml` `groupId` → `com.hiresense` (`artifactId` kept `HireSense`, dependencies unchanged); the two Java classes moved by plain filesystem move to `com/hiresense/` with their `package` lines changed; the four empty `com/example` folders removed (checked empty first); `CLAUDE.md` backend run and test commands filled in, each with the honest note that they fail until Task 1.2. A search found no remaining reference to `com.example` outside build output and the IDE cache.
+- **Verification on JDK 21.0.13 / Maven 3.10.1 after the change:** clean compile and package = **BUILD SUCCESS** (only `com/hiresense/HireSenseApplication.class` in `target/classes`; no stale old-package classes). `mvnw test`: 1 test, 1 error (`Failed to determine a suitable driver class`), identical to before the rename = expected, not green. Start-up: logger now `com.hiresense.HireSenseApplication`; 0 JPA repositories found; Tomcat initialises; stops at the missing datasource, identical to before = app **cannot run** until Task 1.2.
+- **Owner choice: PostgreSQL via Option A (official Windows installer).** Nothing was downloaded or installed. Plan prepared from official sources: PostgreSQL 17.12-1 recommended (18.7-1 viable); EDB installer from `get.enterprisedb.com` (the packager the postgresql.org Windows page points to); SHA-256 and size taken from the winget manifest and response headers (checksums verified after any download); components to select: PostgreSQL Server only (exclude pgAdmin 4, Stack Builder and Command Line Tools); default directory `C:\Program Files\PostgreSQL\<major>`; port 5432 (confirmed free); superuser password typed only by the owner in the wizard; verification through IntelliJ's Database tools. No Docker, pgAdmin, DBeaver or other client. Support facts (postgresql.org versioning policy): 18 supported until Nov 2030, 17 until Nov 2029, 16 until Nov 2028. Spring Boot 4.1.2 manages Flyway 12.4.0 and PostgreSQL JDBC driver 42.7.14; support of Flyway/driver for PostgreSQL 18 could **not** be confirmed from official sources in this check, which is why 17 is recommended.
+- **GitHub issue #17 evidence (read-only), issue left OPEN as instructed:** `docs/requirements.md` was introduced by commit `8162842`; `origin/main` = `HEAD` = `8162842`; GitHub's API shows the same commit as the latest to touch the file; blob id `fdd97938…` is identical locally, on `origin/main` and on GitHub; the working-tree file equals `HEAD`; GitHub shows `Version: 0.6`. Closing the issue is a GitHub write and waits for the owner.
+- **Task 1.2 prepared** (plan only, see the owner message): add the PostgreSQL JDBC driver (version managed by Boot), datasource configuration via environment variables with no secrets, separate test database, `.env.example`, local setup document; blocked until a PostgreSQL server exists.
+
+### Phase 1 start and Task 1.1 – Review existing Spring Boot project (2026-11-18)
+- **Owner decision (explicit): start Phase 1 while Phase 0 remains `IN_PROGRESS`.** Phase 0 stays open until Tasks 0.8 and 0.9 and the remaining verification requirements are addressed; **no `phase-0` Git tag** yet. Phase 0 documentation work continues alongside Phase 1. This overrides `HIRESENSE.md` principle 14 / section 5 by the owner's choice.
+- **Owner decision:** Task 0.7 is `COMPLETED` with reduced scope (labels, milestones, issues done; Project, fields, views, automation and sub-issue links deferred and must not block development).
+- **Owner decision (C6):** change the placeholder base package `com.example.hiresense` to `com.hiresense` before any implementation. Affected files shown to the owner first; not applied yet.
+- **Owner safeguards for Phase 1:** no PostgreSQL install without approval; no system configuration changes without approval; **no H2** as a substitute for PostgreSQL integration tests; approved database constraints are never weakened; no stage, commit or push without approval; resolve open points C1–C5 before implementing the tasks they affect; one task at a time with teaching.
+- **Owner requirement (database tooling):** use PostgreSQL through IntelliJ IDEA's built-in Database tools (Database Explorer for connections and browsing, SQL console for queries). Preferred setup: IntelliJ Database Tools → PostgreSQL server → HireSense database. **Do not install** Docker Desktop, pgAdmin, DBeaver or any other database client or additional tool without explicit approval; PostgreSQL server installation also needs approval.
+- **Finding – IntelliJ:** IntelliJ IDEA Ultimate 2026.2 (build 262.10968.63) is installed and running. The Database Tools plugin (`DatabaseTools`, with PostgreSQL dialect modules) is bundled and not disabled. The PostgreSQL JDBC driver is not bundled; IntelliJ normally downloads it on first connection (needs the owner's approval). Licence state was not inspected (the owner confirms in the IDE).
+- **Finding – PostgreSQL server:** none available. No `psql`/`postgres` on PATH, no PostgreSQL service, nothing listening on 5432–5434, no installation folder, no WSL, no Docker. IntelliJ is only a client, so a server is needed before Task 1.2. Options were presented to the owner; nothing was installed.
+- **Verification on JDK 21.0.13 / Maven 3.10.1 (existing project, unchanged):** compiled and packaged (47.7 MB jar) = **Compiled**. `mvnw test`: 1 test, 1 error ("Failed to determine a suitable driver class"; no datasource/driver) = not green, expected until Task 1.2. Starting the jar: Spring Boot starts, scans 0 repositories, initialises Tomcat on 8080, then **fails to start** for the same reason = **not manually verified as running**. Dependencies resolved (from the built jar): Spring Framework 7.0.10, Hibernate 7.4.13, Spring Data JPA 4.1.2, HikariCP 7.0.2, Jackson 3.1.7, Tomcat 11.0.27, Logback 1.5.38, Jakarta Persistence 3.2.0; **0 JDBC drivers**.
+- **Honest status:** the generated skeleton currently cannot start. This predates Phase 1 (rule 6 "keep the app working" is knowingly violated until Task 1.2) and is recorded as a known issue.
+- **Open conflicts to resolve before the affected tasks:** C1 acting-user identification without authentication (before 1.8–1.10); C2 roadmap API table vs decisions D-03/D-16/D-11/D-18 (before 1.8, 1.10); C3 PostgreSQL server and version (before 1.2); C4 repository tests against a separate local PostgreSQL test database, no H2 (before 1.2/1.13); C5 missing dependencies incl. Actuator health for NFR-019, each checked for Spring Boot 4.1.2 / Java 21 compatibility (before the task that adds them).
+- Git (owner actions, observed read-only): commit `8162842` "Added ER Diagrams databases design and user stories" contains `HIRESENSE.md` and the four docs and was pushed (`origin/main` = `HEAD`). The staging area is empty. `PROJECT_PROGRESS.md` is modified but uncommitted. No Git command that changes state was run by the AI.
+- Proposed Task 1.1 changes (not applied): rename package to `com.hiresense` (2 Java files moved by plain filesystem move, 2 `package` lines, `groupId` in `pom.xml`) and fill the `CLAUDE.md` commands table. `artifactId` `HireSense` left as is unless the owner decides otherwise.
+
+### Task 0.7 – GitHub Projects board: planning (2026-11-18)
+- Status `IN_PROGRESS`. **Nothing has been created or changed on GitHub**, and no Git command that changes state was run.
+- Owner approved (2026-11-18): proposed structure (6 Status columns, fields Tier / Requirements / Verification, 13 labels, 13 milestones without due dates, 3 views); just-in-time scope of 37 issues (13 epics, Phase 0 tasks 0.1–0.9, Phase 1 tasks 1.1–1.13, 2 decision issues); Phase 0 history issues reflecting real status; **public** Project; creation with the GitHub CLI; issue text uses requirement IDs (no links to uncommitted documents); `PROJECT_PROGRESS.md` stays authoritative; a card is Done only when acceptance criteria and verification are met.
+- Done so far: installed GitHub CLI 2.104.0 with `winget install GitHub.cli` (approved system change). Owner performs `gh auth login` personally; no token is ever requested or shown. Existing repository labels and settings are not to be deleted or changed. No commit, push or history rewrite.
+- Prepared (scratch folder, not in the repo): the exact label, milestone and issue definitions (13 / 13 / 37) for the owner's review.
+- Next: owner authenticates, I verify repository access and permissions (read-only), the owner confirms the definitions, then batches run in this order with the commands shown first: labels, milestones, issues, then Project, fields and items. Project views and built-in automation may need the browser.
+- Owner clarifications (2026-11-18): (1) "Not applicable (docs)" added as a Verification field value for documentation-only tasks; (2) for Phase 1, investigate a **local PostgreSQL installation** instead of moving Docker Desktop forward, and ask before installing PostgreSQL or making any system change; (3) Phase 1 uses development seed/test resume records until upload exists in Phase 4, without bypassing the mandatory-resume rule (D-15). Reflected in the drafts of tasks 1.2 and 1.7.
+- Authentication completed by the owner. Read-only checks (2026-11-18): account `yuktavyas14`, scopes `gist, project, read:org, repo`, permission `ADMIN` on the repository (PUBLIC, issues and projects enabled). Before any write: 10 default labels, 0 milestones, 0 issues/PRs, no Projects.
+- **Batch 1 (labels) executed with owner approval:** created the 13 new labels only (`epic`, `task`, `user-story`, `decision`, `area:backend`, `area:frontend`, `area:database`, `area:security`, `area:infra`, `area:ai`, `area:testing`, `blocked`, `needs-decision`). Verified by listing GitHub afterwards: 23 labels total; the 10 existing labels are present and unchanged; all 13 new labels match the approved name, colour and description; milestones, issues and Projects are still 0. Nothing was edited or deleted. Cosmetic note: `area:ai` and the default `good first issue` share the same purple (7057FF).
+- Issue definitions updated per owner clarifications: Task 0.4 stays In review until the documentation is **committed and pushed** with approval; Task 0.6 stays In review until the visual-rendering and integration verification gaps are addressed; Task 1.1 **reviews** the existing Spring Boot project and must not create a duplicate.
+- **Batch 2 (milestones) executed with owner approval:** created the 13 milestones `Phase 0 – Planning and Setup` … `Phase 12 – Final Polish and Showcase` (GitHub milestone numbers 1–13, i.e. phase number + 1), open, **no due dates**. Verified by fetching GitHub's raw UTF-8 response and comparing with the approved text: 13 of 13 exact title matches, exactly one en dash (U+2013) in each title, descriptions equal, no due date, no issues attached, no extra milestones. Existing milestones: none (nothing to skip, nothing edited or deleted). Labels still 23, issues 0, Projects none.
+- Batch 3 (37 issues) prepared in dry-run mode only (not executed): creation order epics #1–#13, Phase 0 tasks #14–#22, Phase 1 tasks #23–#35, decisions #36–#37; after creation, tasks 0.2, 0.3 and 0.5 are closed as completed. Payloads were built exactly as the script sends them and compared with the approved definitions: 37 of 37 identical, en dashes preserved. Sub-issue links (epic → tasks) are a separate follow-up step to be shown first. Waiting for the owner's approval of Batch 3.
+- **Batch 3 (issues) executed with owner approval:** created the 37 approved issues (#1–#13 epics, #14–#22 Phase 0 tasks, #23–#35 Phase 1 tasks, #36 Q7, #37 DO-6) with no errors, then closed only #15 (Task 0.2), #16 (Task 0.3) and #18 (Task 0.5) as completed. Verified afterwards by fetching GitHub's raw UTF-8 response and comparing with the approved definitions: 37 of 37 match on title, body, labels, milestone and state; 34 open, 3 closed; no assignees, no comments, no pull requests, no extra issues. Milestone counts: Phase 0 = 7 open / 3 closed, Phase 1 = 15 open, Phase 2 = 2 open, Phases 3–12 = 1 open (their epic). Labels in use: epic 13, task 22, decision 2, needs-decision 2. A local receipt of created issue numbers was saved in the scratch folder. Nothing else was created or modified.
+- Sub-issues support confirmed read-only (the sub-issues endpoint returns 200 for the epics). Proposed links (NOT created, awaiting owner approval): #1 ← #14–#22 (9 tasks), #2 ← #23–#35 (13 tasks); #36 and #37 stay standalone.
+- Remaining after Batch 3: sub-issue links, public Project with fields and item statuses, views and automation (possibly via the browser). Project statuses (In review, Ready, etc.) do not exist yet because the Project has not been created; issue state alone shows Done as closed.
+- Git note: the working-tree files are edited as work proceeds, but the Git index (staging area) is never touched by the AI. It was observed to change between checks without any AI Git command (staged → empty); the owner manages staging. Before any future commit the owner wants `git status`, `git diff`, `git diff --cached` and the staged-versus-unstaged difference of this file.
+
+### Task 0.6 – FINAL SIGN-OFF (2026-11-18)
+- Owner approved: the 12-table design, all DD decisions, normalized skills, UUID/BIGINT strategy, composite FK for resume ownership, RESTRICT/CASCADE rules, CHECK constraints, transactional status+history updates, private resume storage with opaque keys, and the PostgreSQL 16.4 (PGlite) 48/48 results as **preliminary**.
+- Remaining decisions: **D-31 / Q9** hidden resumes do not count toward the limit of 5; used resumes are always retained; unused hidden resumes may be permanently deleted. **Q7** stays open for a later task. **DO-6** deferred until database roles are configured in Phase 1.
+- Docs updated: `requirements.md` v0.6 (D-31, Q9 resolved, only Q7 open), `user-stories.md` v0.3 (US-C02/US-C03 reflect active-resume counting; 95 acceptance criteria), `database-design.md` v0.3, `er-diagram.md` v0.3.
+- **Verification limitations kept in the documents:** (1) visual Mermaid rendering not verified; (2) Flyway migrations and JPA mappings not written or tested; (3) PGlite results are preliminary and must be repeated against the PostgreSQL version selected in Phase 1. Scratch files are not retained (owner confirmed).
+- Re-checked after the final edits: every id cited in the stories, design and diagram exists in `requirements.md`; Mermaid parser still accepts the diagram.
+
+### Task 0.6 – revision v0.2: approvals and verification (2026-11-18)
+- Approved by owner: normalized skills (`skills`, `job_skills`, `candidate_skills`); `recruiter_profiles` (MVP business rule stays **one recruiter per company**, enforced in the service layer; no `UNIQUE` on `company_id` so the schema stays flexible); employment types `FULL_TIME`/`PART_TIME`/`CONTRACT`/`INTERNSHIP`; UUID for API-facing entities and BIGINT for logs and suitable lookup tables; database CHECK constraints, foreign keys and `ON DELETE` actions, with status transitions kept in the Spring Boot service layer. All DD-01..DD-15 are now tagged [A].
+- Documentation added to `docs/database/database-design.md` (now v0.2): section 8 transaction requirements (status change + history in one transaction, optimistic lock answering 409, apply/register/delete flows, tests Phase 1 must include); section 9 MVP business rules vs future schema flexibility; history row contents mapped to columns; explanation of the composite foreign key and the `MATCH SIMPLE` NULL trap; resume storage stays private (opaque `storage_key`, no URL).
+- **Verification actually run** (all in a temporary scratch folder outside the repo; nothing added to the project, no project database touched, no migration run):
+  - Mermaid: parsed with the real parser (`mermaid` 11.4.1 + `jsdom`, installed with `--ignore-scripts` in the scratch folder): diagram accepted as type `er`; a deliberately broken copy was rejected. Re-run after the final edits: still OK.
+  - PostgreSQL logic: throwaway DDL written from the design ran on PostgreSQL 16.4 (PGlite, in memory). **48/48 checks passed**, covering the composite foreign key (another candidate's resume rejected), mandatory resume, `RESTRICT` on job and used resume, unique and CHECK rules, mandatory reject/reopen reason, `job_skills` cascade, audit row surviving a job deletion, transaction rollback of a failed history insert, optimistic-lock stale update, and two recruiters allowed in one company.
+  - Mutation check: three deliberately weakened schemas (plain FK instead of composite, `CASCADE` instead of `RESTRICT`, reason CHECK removed) were each detected, so the passes are meaningful.
+- **Not verified:** the diagram has **not been visually rendered** (needs a browser); not a Flyway migration; no JPA/Hibernate mapping; no performance or `EXPLAIN` on real data; service-layer rules not implemented; PostgreSQL 16.4 in PGlite may differ from the version chosen in Phase 1/4.
+- Open: Q7 (retention, deferred by owner), Q9 (do hidden resumes count toward 5; unused resumes physically deleted), DO-6 (should the database itself prevent edits to history and audit tables; decide with database roles in Phase 4).
+
+### Task 0.6 – ER diagram and database design (2026-11-18)
+- Created `docs/diagrams/er-diagram.md` (Mermaid ER diagram: 12 entities, 15 relationships) and `docs/database/database-design.md` (tables, columns, FK actions, constraints, indexes, normalization review, 15 design proposals DD-01..DD-15, traceability, future tables, open design questions DO-1..DO-5). Design only: no SQL migration, no entity code, no database touched.
+- The six roadmap entities map to `users`, `candidate_profiles`, `companies`, `jobs`, `applications`, `resumes`. Added: `recruiter_profiles`, `application_status_history`, `audit_log`, `skills`, `job_skills`, `candidate_skills`.
+- Approved decisions expressed in the schema: D-15 (`applications.resume_id` NOT NULL), D-16 (`ON DELETE RESTRICT` job→applications), D-21 (RESTRICT + `resumes.hidden_at`), D-13 (nullable phone), D-12 (history and audit tables), D-17 (`storage_key`, never a URL), D-06 (composite FK so a resume belongs to the applicant).
+- Checks done: every FR/NFR/D id cited exists in `requirements.md`; a structural lint of the Mermaid block passed (12 entities, 15 relationships, 0 problems; this is my own script, not the real Mermaid parser).
+- **Not verified:** diagram not rendered in a viewer; no SQL ever run against PostgreSQL. Real verification starts in Phase 1 (Flyway + repository tests that try to violate each constraint).
+- Small edit to `docs/requirements.md` section 6 to point to proposal DD-13 (`full_name` on `users`).
+- Awaiting your approval of: DD-01..DD-15 (especially DO-1 normalized skills, DO-2 `recruiter_profiles`, DO-3 employment types).
+
+### Task 0.5 – Roles and user stories, finalized (2026-11-18)
+- Owner approved with decisions D-26..D-30 (Q18, Q19 resolved; admins cannot see applicants or resumes; role change at next login; offer decisions final). Requirements v0.4 → v0.5, user stories v0.1 → v0.2.
+- Traceability re-checked by script: every FR/NFR/D id cited in the stories exists in the requirements; 31 MVP stories, 94 Given/When/Then criteria; no remaining references to Q18/Q19.
+- Remaining open questions: Q7 (retention policy, deferred by owner) and Q9 (do hidden resumes count toward 5; are unused resumes physically deleted).
+
+### Task 0.5 – Roles and user stories (2026-11-18)
+- Created `docs/user-stories.md` v0.1 (documentation only; no code, no Git changes).
+- Contents: roles (Visitor, Candidate, Recruiter, Admin), a permission matrix (who may do what, with 401/403 rules), a table of who may perform each application status transition, 31 MVP user stories (5 visitor, 3 registered-user, 8 candidate, 11 recruiter, 4 admin) with 94 Given/When/Then acceptance criteria, 8 Planned stories, a traceability table to FR IDs and open points.
+- Checked: every FR/NFR/D id cited in the stories exists in `requirements.md` (script check).
+- Not verified: planning document, awaiting your review.
+
+### Task 0.4 – Requirements, revision v0.4 (2026-11-18)
+- Updated `docs/requirements.md` v0.3 → v0.4 after your review (documentation only).
+- New decisions: D-18 candidate answers offers (recruiter issues them); D-19 UTF-8 byte-length check before BCrypt, clear error, never truncate; D-20 only the owning recruiter reopens; D-21 removing a used resume only hides it; D-22 anonymous visitors see job details and basic company info only; D-23 no reopening once the job is closed; D-24 admins cannot download resumes; D-25 rejection reason mandatory.
+- Resolved questions: Q8, Q12, Q13, Q14, Q15, Q16, Q17. New questions: Q18 (what can still happen to applications of a closed job; proposed: pipeline continues, only reopening blocked), Q19 (are reasons visible to candidates; proposed: no).
+- Still open: Q7 (retention policy, owner will finalize later), Q9 (do hidden resumes count toward 5; unused resumes physically deleted), Q18, Q19. Tag counts: 84 [A], 17 [P], 15 [S]. 25 decisions, 21 functional requirements with ACs, 40 NFRs.
+- Checked by search: no stale references to resolved questions or "OFFER is final".
+
+### Task 0.4 – Requirements, revision v0.3 (2026-11-18)
+- Updated `docs/requirements.md` v0.2 → v0.3 after your review (documentation only; no code, no Git changes).
+- Approved proposals now tagged [A]: password 8–64 chars + common-password blocklist + no special-character rules (D-08); 5 MB and 5 resumes (D-09); forward-only workflow, rejection from `APPLIED`/`SHORTLISTED`/`INTERVIEW` (D-10); reopen needs authorized recruiter + mandatory reason + returns to previous status (D-11); audit history for status changes and admin deletions (D-12).
+- Changes: phone optional, name and email mandatory (D-13); `ACCEPTED`/`DECLINED` after `OFFER`, new FR-037 (D-14); resume mandatory when applying (D-15); jobs with applications cannot be permanently deleted until retention rules exist (D-16); resumes in a private bucket, authorized downloads only, no public URLs (D-17).
+- Database implications updated: 7 application statuses, `Application.resume_id` NOT NULL with `ON DELETE RESTRICT`, `phone` nullable, `AuditLog` table with no FK to deleted rows, reopen reason mandatory in status history, `Resume` stores `storage_key` never a URL.
+- New proposals/questions raised: who sets `ACCEPTED`/`DECLINED` (proposed: the candidate, Q13); BCrypt 72-**byte** limit vs 64 characters (Q15); admin resume access (Q16); hidden-resume handling (Q9); reopen on a closed job (Q14).
+- Still open: Q7 (retention policy, deferred by owner), Q8, Q9, Q12, Q13, Q14, Q15, Q16, Q17. Tag counts: 69 [A], 19 [P], 18 [S]. 21 functional requirements with ACs, 40 NFRs, 17 decisions.
+- Not verified: planning document, awaiting your consistency check. Checked by search for stale/contradictory phrases (none left).
+
+### Task 0.4 – Requirements, revision v0.2 (2026-11-18)
+- Updated `docs/requirements.md` v0.1 → v0.2 with owner decisions D-01..D-07 (documentation only; no code changed).
+- Decisions: anonymous job browsing with login required to apply (D-01); controlled status workflow, reopen only by authorized recruiter (D-02); close jobs, admin-only permanent deletion subject to retention rules (D-03); password min 8 chars + secure hashing (D-04); candidate registration needs name, email, basic contact, resume optional (D-05); multiple resumes, one chosen per application (D-06); AI advisory only (D-07).
+- New requirements: FR-036 (reopen), FR-042 (manage resumes), FR-052 (admin delete job), NFR-038 (public endpoints), NFR-039 (audit), NFR-040 (AI transparency). Changed: FR-001, 005, 010, 030–035, 040, 041, NFR-005, 007, 018, 021, 022, 032, 035, 036.
+- Added status tags **[A]** approved / **[P]** proposal / **[S]** assumption, a "Design implications for the database" section (input to Task 0.6) and an open-questions table (Q1,Q3–Q6 answered; Q2a, Q7–Q12 open).
+- Proposals still needing approval include: phone as mandatory contact field, 64-char password maximum, common-password check, 5 MB / 5 resumes limits, the exact status workflow (no backward steps), reason required on reopen, reopen returns to prior status, audit log.
+- Final document size: 20 detailed FRs listed with ACs (19 MVP + FR-051 Planned) plus 8 Planned FRs in a table, 40 NFRs. Tag counts: 37 [A], 18 [P], 11 [S].
+- Not verified: planning document, awaiting your review of v0.2.
 
 ### Task 0.4 – Requirements (2026-11-18)
 - Created `docs/requirements.md` (documentation only; no code or other files changed).

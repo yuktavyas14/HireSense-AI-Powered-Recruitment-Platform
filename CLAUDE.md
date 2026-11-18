@@ -25,8 +25,8 @@ _Fill these in as the project grows._
 
 | Purpose | Command |
 |---------|---------|
-| Run backend | _(added in Phase 1)_ |
-| Run backend tests | _(added in Phase 1)_ |
+| Run backend | `cd backend && mvnw spring-boot:run` (JDK 21 required; **cannot start until Task 1.2 adds PostgreSQL**) |
+| Run backend tests | `cd backend && mvnw test` (JDK 21 required; **`contextLoads` fails until Task 1.2**) |
 | Run frontend | _(added in Phase 3)_ |
 | Run frontend tests | _(added in Phase 3)_ |
 | Start all containers | _(added in Phase 4)_ |

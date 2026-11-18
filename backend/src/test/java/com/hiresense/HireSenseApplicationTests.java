@@ -1,4 +1,4 @@
-package com.example.hiresense;
+package com.hiresense;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
