@@ -48,7 +48,7 @@ class FlywayMigrationTest {
     @Test
     void migrationsOneAndTwoAreAppliedSuccessfully() {
         MigrationInfo[] applied = flyway.info().applied();
-        assertThat(applied).extracting(m -> m.getVersion().getVersion()).containsExactly("1", "2", "3", "4", "5");
+        assertThat(applied).extracting(m -> m.getVersion().getVersion()).containsExactly("1", "2", "3", "4", "5", "6");
         assertThat(applied).allMatch(m -> m.getState() == MigrationState.SUCCESS);
     }
 
