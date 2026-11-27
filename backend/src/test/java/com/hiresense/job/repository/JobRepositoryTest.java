@@ -24,6 +24,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.core.NestedExceptionUtils;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.test.context.transaction.TestTransaction;
 
 /**
@@ -160,6 +161,27 @@ class JobRepositoryTest {
         assertThat(saved.getUpdatedAt()).isAfterOrEqualTo(saved.getCreatedAt());
         assertThat(saved.getVersion()).isZero();
         assertThat(versionInDatabase(saved.getId())).isZero();
+    }
+
+    @Test
+    void staleUpdateIsRejectedByOptimisticLocking() {
+        UUID id = jobRepository.saveAndFlush(newJob(insertCompany())).getId();
+        entityManager.clear();
+
+        Job stale = jobRepository.findById(id).orElseThrow();    // version 0
+        entityManager.detach(stale);                              // stale is no longer managed: it keeps version 0
+        Job current = jobRepository.findById(id).orElseThrow();   // another copy, version 0
+
+        current.close(CLOSED_AT);
+        jobRepository.saveAndFlush(current);                      // database row is now version 1
+
+        stale.close(LATER_CLOSED_AT);                             // changed from the old version 0 copy
+        assertThatThrownBy(() -> jobRepository.saveAndFlush(stale))
+                .isInstanceOf(ObjectOptimisticLockingFailureException.class);
+
+        // The first editor's change is still the stored one; the stale write did not get through.
+        assertThat(versionInDatabase(id)).isEqualTo(1L);
+        assertThat(closedAtInDatabase(id)).isEqualTo(CLOSED_AT);
     }
 
     // ---- 3. valid employment types and statuses ----
