@@ -87,6 +87,7 @@ Created automatically when a candidate registers. Only name and email are mandat
 | `user_id` | UUID | NN, UQ, FK → `users` | One profile per recruiter. |
 | `company_id` | UUID | **NULL allowed**, FK → `companies` | Null until the recruiter creates their company (FR-001 AC6, FR-020). |
 | `created_at`, `updated_at` | TIMESTAMPTZ | NN | |
+| `version` | BIGINT | NN, default 0 | Optimistic locking. Added in migration V7 (owner decision 2026-11-24) so the entity can extend `AuditableEntity`. |
 
 **"Owning recruiter"** (used throughout the stories) means: `recruiter_profiles.company_id = jobs.company_id` for the job in question.
 **[A] DD-03**
